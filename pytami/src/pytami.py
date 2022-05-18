@@ -160,22 +160,9 @@ def tami(transaction_history: List[Transaction]):
     index_value_history = create_index_value_history(valid_transactions)
     index_value = get_index_value(index_value_history)
     index_ratios = get_index_ratios(index_value_history)
-    time_adjusted_values = [ element['index_ratio']*index_value for element in index_ratios ]
+    time_adjusted_values = [element['index_ratio'] * index_value for element in index_ratios]
     time_adjusted_market_index = reduce(lambda acc,value: acc + value, time_adjusted_values, 0)
     return time_adjusted_market_index
-
-today = datetime.now()
-three_days_ago = today + relativedelta(days=-3)
-one_month_ago = today + relativedelta(months=-1)
-two_days_ago = today + relativedelta(days=-2)
-six_weeks_ago = today + relativedelta(weeks=-1)
-mocktransaction_history:List[Transaction] = [
-  Transaction(price=612, item_id='Mars', timestamp=six_weeks_ago), 
-  Transaction(price=500, item_id="Lavender", timestamp=three_days_ago),
-  Transaction(price=700, item_id="Hyacinth", timestamp=one_month_ago),
-  Transaction(price=1200, item_id="Mars", timestamp=two_days_ago)
-]
-tami(mocktransaction_history)
 
 
 

@@ -1,2 +1,1 @@
-pytest=7.1.2
 python-dateutit=2.8.2
