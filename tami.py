@@ -1,4 +1,5 @@
 
+from time import time
 from typing import List
 from datetime import datetime
 from dateutil.relativedelta import *
@@ -16,8 +17,12 @@ class Transaction():
         self.timestamp = timestamp
         
     def __repr__(self):
-        return str({'price':self.price, 'item_id': self.item_id, 'timestamp': self.timestamp})
+        return str({'price':self.price, 'item_id': self.item_id, 'timestamp': str(self.timestamp)})
 
+    def __eq__(self, other):
+        if isinstance(other, Transaction):
+            return self.price == other.price and self.item_id == other.item_id and str(self.timestamp) == str(other.timestamp)
+        return False
 
 class IndexValueHistoryItem:
     item_id: int
@@ -34,7 +39,11 @@ class IndexValueHistoryItem:
     def __repr__(self):
         return str({'price':self.price, 'item_id': self.item_id, 'index_value': self.index_value, 'Transaction': self.Transaction})
 
-
+    def __eq__(self, other):
+        if isinstance(other, IndexValueHistoryItem):
+            return self.price == other.price and self.item_id == other.item_id and self.index_value == other.index_value and self.Transaction == other.Transaction
+        return False
+    
 
 def sortTimestamp(element):
     return element.timestamp.timestamp()
@@ -103,8 +112,8 @@ def create_index_value_history(transaction_history: List[Transaction]) -> List[I
 
             result.append({
                 'item_id': transaction.item_id,
-                'price': transaction.price,
-                'index_value': index_value,
+                'price': float(transaction.price),
+                'index_value': float(index_value),
                 'transaction': transaction
             })
 
@@ -119,8 +128,8 @@ def create_index_value_history(transaction_history: List[Transaction]) -> List[I
 
         result.append({
                 'item_id': transaction.item_id,
-                'price': transaction.price,
-                'index_value': weighted_index_value,
+                'price': float(transaction.price),
+                'index_value': float(weighted_index_value),
                 'transaction': transaction
             })
 
