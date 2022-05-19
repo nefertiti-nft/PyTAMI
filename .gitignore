@@ -16,6 +16,9 @@ dist/
 # Log files
 *.log
 
+# venv
+venv/
+
 # Package files
 *.jar
 

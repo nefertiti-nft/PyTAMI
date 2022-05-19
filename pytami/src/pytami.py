@@ -7,8 +7,20 @@ from functools import reduce
 
 
 class Transaction():
+    '''
+    A class to represent/model a Request to a Product with or without Filters.
+
+    Attributes
+    ----------
+    price : float
+        The price from the nft transaction
+    item_im: int or str
+        The nft identifier
+    timestamp: datetime
+        The transaction time 
+    '''
     price: float
-    item_id: int
+    item_id: int or str
     timestamp: datetime
 
     def __init__(self, price:float, item_id:int, timestamp: datetime):
@@ -25,7 +37,21 @@ class Transaction():
         return False
 
 class IndexValueHistoryItem:
-    item_id: int
+    '''
+    A class to represent/model a Request to a Product with or without Filters.
+
+    Attributes
+    ----------
+    item_im: int or str
+        The nft identifier
+    price : float
+        The price from the nft transaction
+    index_value: float
+        The index value 
+    Transaction: Transaction
+        The Transaction itself
+    '''
+    item_id: int or str
     price: float
     index_value: float
     Transaction: Transaction
@@ -44,7 +70,9 @@ class IndexValueHistoryItem:
             return self.price == other.price and self.item_id == other.item_id and self.index_value == other.index_value and self.Transaction == other.Transaction
         return False
     
-
+'''
+    Given a datetime element, returns it's timestamp value
+'''
 def sort_timestamp(element):
     return element.timestamp.timestamp()
 
@@ -99,9 +127,9 @@ def filter_valid_transactions(transaction_history: List[Transaction]) -> List[Tr
     return [ transaction for transaction in transaction_history if inclusion_map[transaction.item_id]['is_valid'] ]
 
 '''
-   Given a list of transactions, this crates a list that contains the index value at the
-   time of each transaction, and includes the transaction as well.
-   @see {@link https://github.com/Mimicry-Protocol/TAMI/blob/main/reference/card-ladder-white-paper.pdf}
+    Given a list of transactions, this crates a list that contains the index value at the
+    time of each transaction, and includes the transaction as well.
+    @see {@link https://github.com/Mimicry-Protocol/TAMI/blob/main/reference/card-ladder-white-paper.pdf}
 '''
 def create_index_value_history(transaction_history: List[Transaction]) -> List[IndexValueHistoryItem]:
     transaction_map = {}
@@ -152,15 +180,24 @@ def create_index_value_history(transaction_history: List[Transaction]) -> List[I
 
     return result
 
-
+'''
+    Given a list of IndexValueHistoryItem, returns the index value of the last item.
+'''
 def get_index_value(index_value_history: List[IndexValueHistoryItem]):
     return index_value_history[len(index_value_history)-1]['index_value']
 
-
+'''
+    Given a dictionary and an IndexValueHistoryItem, assigns the latest to the dictionary
+'''
 def assign_map(x:dict, y:IndexValueHistoryItem):
     x[y['item_id']] = y
     return x
 
+'''
+    Given a list of IndexValueHistoryItem, calculates the index ratio for the last transaction
+    of each item in the collection. Returns a list of objects where each object is the IndexValueHistoryItem
+    with an additional `index_ratio` property added.
+'''
 def get_index_ratios(index_value_history: List[IndexValueHistoryItem]):
     last_sale_map = reduce(assign_map ,index_value_history,{})
     result = []
@@ -171,6 +208,10 @@ def get_index_ratios(index_value_history: List[IndexValueHistoryItem]):
         })
     return result
 
+'''
+    Given a list of transactions for a given collection, this calculates the
+    Time Adjusted Market Index for that collection.
+'''
 def tami(transaction_history: List[Transaction]):
     sorted_transactions = sort_transactions(transaction_history)
     valid_transactions = filter_valid_transactions(sorted_transactions)
@@ -180,6 +221,3 @@ def tami(transaction_history: List[Transaction]):
     time_adjusted_values = [element['index_ratio'] * index_value for element in index_ratios]
     time_adjusted_market_index = reduce(lambda acc,value: acc + value, time_adjusted_values, 0)
     return time_adjusted_market_index
-
-
-

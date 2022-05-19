@@ -19,7 +19,7 @@ mockTransactionHistory = [
   pytami.Transaction(price=612, item_id='Nyx', timestamp=twoYearsAgo),
   pytami.Transaction(price=400, item_id='Hyacinth', timestamp=threeDaysAgo),
   pytami.Transaction(price=1200, item_id='Nyx', timestamp=yesterday),
-  pytami.IndexValueHistoryItemTransaction(price=612, item_id='Mars', timestamp=sixWeeksAgo),
+  pytami.Transaction(price=612, item_id='Mars', timestamp=sixWeeksAgo),
 ]
 
 expected_values = {
