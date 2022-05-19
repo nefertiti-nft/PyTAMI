@@ -45,12 +45,19 @@ class IndexValueHistoryItem:
         return False
     
 
-def sortTimestamp(element):
+def sort_timestamp(element):
     return element.timestamp.timestamp()
 
+'''
+    Given a list of transactions, this returns those transactions sorted in chronological order.
+'''
 def sort_transactions(transaction_history: List[Transaction]) -> List[Transaction]:
-    return sorted(transaction_history, key=sortTimestamp)
+    return sorted(transaction_history, key=sort_timestamp)
 
+'''
+    Given a list of transactions, this returns only transactions that have at least
+    2 sales in the last year, and at least one sale in the last 6 months.
+'''
 def filter_valid_transactions(transaction_history: List[Transaction]) -> List[Transaction]:
     now = datetime.now()
     one_year_ago = now + relativedelta(years=-1)
@@ -70,22 +77,32 @@ def filter_valid_transactions(transaction_history: List[Transaction]) -> List[Tr
         if current_map_item['is_valid']:
             continue
 
+        # If the transaction did not occur within the last year, it does not affect
+        # whether the item is valid or not, so we skip it
         if not timestamp > one_year_ago:
             continue
 
         past_year_sale_count = current_map_item['past_year_sale_count'] if current_map_item['past_year_sale_count'] else 0
         current_map_item['past_year_sale_count'] = past_year_sale_count + 1
 
+        # If the transaction did not occur within the last six months, since we already
+        # incremented the `past_year_sale_count`, we keep going
         if not timestamp > six_months_ago:
             continue
 
         current_map_item['has_sale_in_last_six_months'] = True
 
+        # If the item has 2 or more sales in the last year, it's valid :-)
         if current_map_item['past_year_sale_count'] >= 2:
             current_map_item['is_valid'] = True
 
     return [ transaction for transaction in transaction_history if inclusion_map[transaction.item_id]['is_valid'] ]
 
+'''
+   Given a list of transactions, this crates a list that contains the index value at the
+   time of each transaction, and includes the transaction as well.
+   @see {@link https://github.com/Mimicry-Protocol/TAMI/blob/main/reference/card-ladder-white-paper.pdf}
+'''
 def create_index_value_history(transaction_history: List[Transaction]) -> List[IndexValueHistoryItem]:
     transaction_map = {}
 
